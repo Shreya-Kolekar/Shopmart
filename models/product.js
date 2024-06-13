@@ -16,14 +16,16 @@ const getProductsFromFile = (cb) => {
 // class to create and store products
 
 module.exports = class Product {
-    constructor(t) {
-        this.title = t;
+    constructor(title, imageURL, description, price) {
+        this.title = title;
+        this.imageURL = imageURL;
+        this.description = description;
+        this.price = price;
     }
 
     // method to save product
     save() {
         getProductsFromFile( (products) => {
-            console.log('******************', this);
             if (this.title != "") {
                 products.push(this);
                 // JSON stringify takes JS array/obj and converts to JSON
