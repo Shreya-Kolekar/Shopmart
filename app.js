@@ -1,8 +1,15 @@
 // path module from nodejs
 const path = require('path');
 
+// import controller for error page
+const errorController = require('./controllers/error');
+
 const express = require('express');
 const app = express();
+
+// set templating engine: ejs
+app.set('view engine', 'ejs');
+app.set('views', 'views')
 
 // add body parser
 const bodyParser = require('body-parser');
@@ -21,9 +28,7 @@ app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
 // route for Error Page. Any route that isn't defined.
-app.use( (req, res, next) => {
-    res.status(400).sendFile(path.join(__dirname, 'views', '404.html'));
-});
+app.use(errorController.get404);
 
 // create a server and listen.
 app.listen(5000);
