@@ -1,18 +1,16 @@
 // path module from nodejs
 const path = require('path');
-const rootDir = require('../util/path');
 
 const express = require('express');
 const router = express.Router();
 
-// get admin route for adding product
-router.get( '/add-product', (req, res, next) => {
-    res.sendFile(path.join(rootDir, 'views', 'add-product.html'));
-});
+// import controller for products
+const productsController = require('../controllers/products');
 
-// post admin route for product listing
-router.post( '/add-product', (req, res, next) => {
-    res.redirect('/');
-});
+// GET- admin route for adding product
+router.get( '/add-product', productsController.getAddProduct);
+
+// POST - admin route for product listing
+router.post( '/add-product', productsController.postAddProduct);
 
 module.exports = router;
