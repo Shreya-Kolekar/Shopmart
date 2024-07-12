@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const Cart = require('./cart');
 const p = path.join(path.dirname(require.main.filename), 'data', 'products.json');
 
 const getProductsFromFile = (cb) => {
@@ -16,7 +17,8 @@ const getProductsFromFile = (cb) => {
 // class to create and store products
 
 module.exports = class Product {
-    constructor(title, imageURL, description, price) {
+    constructor(id, title, imageURL, description, price) {
+        this.id = id;
         this.title = title;
         this.imageURL = imageURL;
         this.description = description;
@@ -26,17 +28,52 @@ module.exports = class Product {
     // method to save product
     save() {
         getProductsFromFile( (products) => {
-            if (this.title != "") {
-                products.push(this);
-                // JSON stringify takes JS array/obj and converts to JSON
-                fs.writeFile(p, JSON.stringify(products), (err) => {
+            // update product mode
+            if (this.id) {
+                const existingProductIndex = products.findIndex(prod => prod.id === this.id);
+                const updatedProducts = [...products];
+                updatedProducts[existingProductIndex] = this;
+                fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
                 });
+            // add new product mode
+            } else {
+                this.id = Math.random().toString();
+                if (this.title != "") {
+                    products.push(this);
+                    // JSON stringify takes JS array/obj and converts to JSON
+                    fs.writeFile(p, JSON.stringify(products), (err) => {
+                        console.log(err);
+                    });
+                }
             }
         });
     };
+
+    static deleteById(id){
+        getProductsFromFile(products => {
+            const product = products.find(prod => prod.id === id);
+            if (!product) {
+                return;
+            }
+            const updatedProducts = products.filter(p => p.id !== id);
+            fs.writeFile(p, JSON.stringify(updatedProducts), err => {
+                if (!err){
+                    Cart.deleteProduct(id, product.price);
+                }
+        });
+        });
+}
 
     // static method refers to the class and not a particular instance
     static fetchAll(cb) {
         getProductsFromFile(cb);
     }
+
+    // static method to get a specific product from ID
+    static findById (id, cb) {
+        getProductsFromFile(products => {
+            const product = products.find(p => p.id === id);
+            cb(product);
+        });
+    };
 };
