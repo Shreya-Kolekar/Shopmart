@@ -3,7 +3,7 @@ const path = require('path');
 
 // import controller for error page
 const errorController = require('./controllers/error');
-
+const db = require('./util/database');
 const express = require('express');
 const app = express();
 
